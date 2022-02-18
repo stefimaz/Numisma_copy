@@ -1,0 +1,2 @@
+# Numisma
+Indexing style tokenization 
