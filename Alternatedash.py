@@ -41,11 +41,11 @@ def get_balance(w3, address):
 def load_contract():
 
     # Load the contract ABI
-    with open(Path('./Vdex2_abi.json')) as f:
+    with open(Path('./VentidexToken_abi.json')) as f:
         contract_abi = json.load(f)
 
     # Set the contract address (this is the address of the deployed contract)
-    contract_address = os.getenv("SMART_CONTRACT_ADDRESS_VDEX2")
+    contract_address = os.getenv("SMART_CONTRACT_ADDRESS_VENTIDEXTOKEN")
 
     # Get the contract
     contract = w3.eth.contract(
@@ -60,9 +60,9 @@ contract = load_contract()
 share_detail_m = "BTC, ETH"
 
 portfolio_database = {
-    "Metadex": ["Metadex","MTX", contract, "1ETH/Share", 1, "Images/Metadex_pie.jpeg"],
-    "Ventidex": ["Ventidex","VTX", contract, "1ETH/Share", 1, "Images/Ventidex_pie.jpeg"],
-    "Farmdex": ["Farmdex","FMX", "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45","1ETH/Share", 1, "Images/Farmdex_pie.jpeg"]
+    "Metadex": ["Metadex","MTX", contract, "1ETH/Share", 0.3, "Images/Metadex_pie.jpeg"],
+    "Ventidex": ["Ventidex","VTX", contract, "1ETH/Share", 0.3, "Images/Ventidex_pie.jpeg"],
+    "Farmdex": ["Farmdex","FMX", "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45","1ETH/Share", 0.3, "Images/Farmdex_pie.jpeg"]
 }
 portfolio = ["Metadex", "Ventidex", "Farmdex"]
 
@@ -120,12 +120,15 @@ st.write(f'Your total is {cost} ETH')
 
 if st.button("Buy Now"):
     # Use the contract to send a transaction to the purchase function
-    tx_hash = contract.functions.transfer(address, cost).transact({
+    
+    ## need a other function to take in count the amount od eth to be sent!!
+    #########################################################################
+    tx_hash = contract.functions.mint(address, amount).transact({
         "from": address, "gas": 1000000})
 
-    #receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
     st.write("Transaction receipt mined:")
-   # st.success(dict(receipt))
+    st.success(dict(receipt))
 st.markdown("---")
 
 
@@ -154,29 +157,6 @@ def pin_appraisal_report(report_content):
     report_ipfs_hash = pin_json_to_ipfs(json_report)
     return report_ipfs_hash
 
-###############################################################################
-# Contract for NFT to register the Shares
-###############################################################################
-# The contracts have to be loaded separately for eack Token index
-# loading contract fot --------- token index
-def load_contract_art():
-
-    # Load the contract ABI
-    with open(Path('./Register.json')) as f:
-        contract_abi = json.load(f)
-
-    # Set the contract address (this is the address of the deployed contract)
-    contract_address = os.getenv("SMART_CONTRACT_ADDRESS_ART")
-
-    # Get the contract
-    contract = w3.eth.contract(
-        address=contract_address,
-        abi=contract_abi)
-    
-    return contract
-
-# Load the contract
-contract_art = load_contract_art()
 
 ################################################################################
 # Register New Porfolio
@@ -184,7 +164,9 @@ contract_art = load_contract_art()
 st.markdown("## Register Your Portfolio")
 index_name = st.text_input("Enter the name of your portfolio")
 holder_name = st.text_input("Enter your full name")
-initial_appraisal_value = st.text_input("Enter the initial investment amount")
+initial_index_value = cost * 2800
+#st.text_input("Enter the initial investment amount")
+
 #file = portfolios_dict[selected_portfolio]['Logo']
 #file = st.file_uploader("Upload Artwork", type=["jpg", "jpeg", "png"]) ## have to have the getvalue() function in pin_artwork
 file = st.camera_input("Picture recording")
@@ -193,12 +175,11 @@ if st.button("Register Index Portfolio"):
     # Use the `pin_artwork` helper function to pin the file to IPFS
     artwork_ipfs_hash =  pin_artwork(index_name, file)
     artwork_uri = f"ipfs://{artwork_ipfs_hash}"
-    tx_hash = contract_art.functions.registerArtwork(
+    tx_hash = contract.functions.registerPortfolio(
         address,
         index_name,
         holder_name,
-        int(initial_appraisal_value),
-        artwork_uri 
+        int(initial_index_value)
     ).transact({'from': address, 'gas': 1000000})
     receipt = w3.eth.waitForTransactionReceipt(tx_hash)
     st.write("Transaction receipt mined:")
@@ -210,26 +191,30 @@ st.markdown("---")
 ################################################################################
 # Display a Token
 ################################################################################
-st.markdown("## Display my Token")
+st.markdown("## Display information about my Token")
 
 #selected_address = st.selectbox("Select Account", options=accounts)
 
 tokens = contract.functions.balanceOf(address).call()
 
-# st.write(f"This address owns {tokens} tokens")
+st.write(f"This address owns {tokens} tokens")
 
 # token_id = st.selectbox("Index Portfolio Tokens", list(range(tokens)))
 
 if st.button("Display"):
 
     # Use the contract's `ownerOf` function to get the art token owner
-    owner =  contract_art.functions.ownerOf(tokens).call()
+    owner =  contract.functions.ownerOf(tokens).call()
 
     st.write(f"The token is registered to {owner}")
+    
+    # value of the portfolio
+    
+    st.write(f"{initial_index_value}")
 
     # Use the contract's `tokenURI` function to get the art token's URI
     
     token_uri =  contract.functions.tokenURI(tokens).call()
 
-   # st.write(f"The tokenURI is {token_uri}")
+    st.write(f"The tokenURI is {token_uri}")
    # st.image(token_uri)
