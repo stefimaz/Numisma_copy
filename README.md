@@ -3,6 +3,8 @@
 
 <!-- header is made with: https://github.com/kyechan99/capsule-render -->
 
+This project was realized as a group and the original Github can be founf [Here](https://github.com/klee08/Numisma)
+
 [Briggs Lalor](https://www.linkedin.com/in/briggsclalor/) [<img src="https://cdn2.auth0.com/docs/media/connections/linkedin.png" alt="LinkedIn -  Briggs Lalor" width=15/>](https://www.linkedin.com/in/briggsclalor/)
 [Ken Lee](https://www.linkedin.com/in/kenkwlee) [<img src="https://cdn2.auth0.com/docs/media/connections/linkedin.png" alt="LinkedIn -  Ken Lee" width=15/>](https://www.linkedin.com/in/kenkwlee)
 [Stephane Maysn](https://www.linkedin.com/in/stephane-masyn-35b16817a/) [<img src="https://cdn2.auth0.com/docs/media/connections/linkedin.png" alt="LinkedIn -  Staphane Masyn" width=15/>](https://www.linkedin.com/in/stephane-masyn-35b16817a/)
