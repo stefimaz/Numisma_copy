@@ -1,4 +1,4 @@
-![header](https://capsule-render.vercel.app/api?type=waving&color=gradient&width=1000&height=200&section=header&text=PRAEDICO&fontSize=30&fontColor=black)
+![header](https://capsule-render.vercel.app/api?type=waving&color=gradient&width=1000&height=200&section=header&text=NUMISMA&fontSize=30&fontColor=black)
 
 
 <!-- header is made with: https://github.com/kyechan99/capsule-render -->
